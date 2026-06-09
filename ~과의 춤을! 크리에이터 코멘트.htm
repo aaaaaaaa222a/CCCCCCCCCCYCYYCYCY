@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>☆⌒(*＾-゜)v</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: #e0d8ce;
+    --border2: #cfc6ba;
+    --text: #2a2420;
+    --text2: #6b5f52;
+    --text3: #9e9088;
+    --accent: #8a6e4a;
+    --accent-light: #c9a97a;
+    --accent-bg: #f5ede0;
+    --danger: #c0503a;
+    --danger-bg: #fdf0ed;
+    --add: #4a7a5a;
+    --add-bg: #edf5f0;
+    --radius: 6px;
+  }
+
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+  .header-title { font-family: 'IM Fell English', serif; font-size: 15px; color: var(--accent); letter-spacing: 0.05em; }
+  .header-sub { font-size: 10px; color: var(--text3); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 1px; }
+  .btn-copy {
+    background: var(--accent); color: #fff; border: none;
+    padding: 8px 16px; border-radius: var(--radius);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
+  }
+  .btn-copy:active { opacity: 0.75; }
+
+  /* ── SPLIT LAYOUT ── */
+  .split-layout { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+
+  .left-pane {
+    width: 420px; min-width: 300px; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    border-right: 1px solid var(--border); overflow: hidden;
+  }
+  .right-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #111; }
+  .preview-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px; background: #1a1510; border-bottom: 1px solid #2e2414; flex-shrink: 0;
+  }
+  .preview-label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: #9a7e48; font-family: 'IM Fell English', serif; }
+  .preview-iframe-wrap { flex: 1; overflow: auto; background: #1a1510; }
+  #preview-iframe { width: 100%; border: none; display: block; min-height: 100%; }
+
+  /* ── RESIZER ── */
+  .resizer { width: 4px; cursor: col-resize; background: var(--border); flex-shrink: 0; transition: background 0.15s; }
+  .resizer:hover, .resizer.dragging { background: var(--accent-light); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; background: var(--surface); border-bottom: 1px solid var(--border);
+    overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 10px 14px; font-size: 11px; font-weight: 500; color: var(--text3);
+    cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s; user-select: none;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── PANELS ── */
+  .panels-wrap { flex: 1; overflow-y: auto; overflow-x: hidden; }
+  .panel { display: none; padding: 14px; }
+  .panel.active { display: block; }
+
+  /* ── SECTION CARD ── */
+  .section-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 10px; overflow: hidden;
+  }
+  .section-header {
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); }
+  .section-body { padding: 12px; }
+
+  /* ── FORM ── */
+  .field { margin-bottom: 10px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-label { display: block; font-size: 10px; font-weight: 500; color: var(--text2); margin-bottom: 4px; letter-spacing: 0.05em; }
+  input[type="text"], textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 7px 9px;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 12px; color: var(--text);
+    outline: none; transition: border-color 0.15s; -webkit-appearance: none;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: var(--accent-light); background: #fff; }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.7; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* ── BUTTONS ── */
+  .btn-sm {
+    padding: 6px 11px; border-radius: 4px;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 11px; font-weight: 500;
+    cursor: pointer; border: none; transition: opacity 0.15s; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-sm:active { opacity: 0.7; }
+  .btn-add { background: var(--add-bg); color: var(--add); border: 1px solid #9ac8a8; }
+  .btn-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid #e8a090; }
+
+  /* ── STATUS SELECT ── */
+  .status-opts { display: flex; gap: 5px; flex-wrap: wrap; }
+  .status-opt {
+    padding: 3px 10px; border-radius: 3px; font-size: 11px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface2); color: var(--text2);
+    transition: all 0.15s; user-select: none;
+  }
+  .status-opt.sel-valid { background: rgba(20,40,20,0.15); border-color: #3a6030; color: #4a8040; }
+  .status-opt.sel-closed { background: rgba(40,20,20,0.15); border-color: #603030; color: #a04040; }
+  .status-opt.sel-wip { background: rgba(30,20,40,0.15); border-color: #503068; color: #8050a0; }
+
+  /* ── COMMAND ITEMS ── */
+  .cmd-list { display: flex; flex-direction: column; gap: 7px; }
+  .cmd-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 10px; position: relative;
+  }
+  .cmd-item .field { margin-bottom: 7px; }
+
+  /* ── OUTPUT ── */
+  .output-area {
+    background: #1a1a1a; color: #d4d4d4; border-radius: var(--radius);
+    padding: 12px; font-family: 'Courier New', monospace; font-size: 11px;
+    line-height: 1.6; overflow-x: auto; white-space: pre;
+    max-height: 50vh; overflow-y: auto; border: 1px solid #333;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #2a2420; color: #f0e8d8;
+    padding: 10px 20px; border-radius: 20px; font-size: 12px;
+    opacity: 0; transition: all 0.25s; pointer-events: none; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  hr.light { border: none; border-top: 1px solid var(--border); margin: 11px 0; }
+
+  /* ── CHAR indicator in textarea ── */
+  .textarea-wrap { position: relative; }
+  .char-hint { position: absolute; bottom: 5px; right: 8px; font-size: 9px; color: var(--text3); pointer-events: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">✦ Creator Editor</div>
+    <div class="header-sub">Edvalt Imperial Archive</div>
+  </div>
+  <button class="btn-copy" onclick="copyCode()">HTML 복사</button>
+</div>
+
+<div class="split-layout">
+
+  <!-- LEFT: EDITOR -->
+  <div class="left-pane" id="left-pane">
+    <div class="tabs">
+      <div class="tab active" data-panel="basic">기본</div>
+      <div class="tab" data-panel="usernote">유저노트</div>
+      <div class="tab" data-panel="persona">페르소나</div>
+      <div class="tab" data-panel="commands">명령어</div>
+      <div class="tab" data-panel="closing">마무리</div>
+      <div class="tab" data-panel="output">코드</div>
+    </div>
+
+    <div class="panels-wrap">
+
+      <!-- 기본 -->
+      <div class="panel active" id="panel-basic">
+
+        <div class="section-card">
+          <div class="section-header"><span class="section-label">헤더 정보</span></div>
+          <div class="section-body">
+            <div class="field">
+              <label class="field-label">상단 레이블 (우측)</label>
+              <input type="text" id="header-label" value="Edvalt Imperial Archive" oninput="livePreview()">
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label class="field-label">파일 번호</label>
+                <input type="text" id="file-no" value="EIA-COMMENT-001" oninput="livePreview()">
+              </div>
+              <div class="field">
+                <label class="field-label">하단 레이블</label>
+                <input type="text" id="footer-label" value="Valid by Edvalt Imperial Archive" oninput="livePreview()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">STATUS</label>
+              <div class="status-opts" id="status-opts">
+                <div class="status-opt sel-valid" data-val="VALID" onclick="selectStatus(this)">● VALID</div>
+                <div class="status-opt" data-val="CLOSED" onclick="selectStatus(this)">● CLOSED</div>
+                <div class="status-opt" data-val="W.I.P" onclick="selectStatus(this)">● W.I.P</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-header"><span class="section-label">크리에이터 코멘트</span></div>
+          <div class="section-body">
+            <div class="field">
+              <label class="field-label">제목</label>
+              <input type="text" id="creator-title" value="크리에이터 코멘트" oninput="livePreview()">
+            </div>
+            <div class="field">
+              <label class="field-label">서브 배지 텍스트</label>
+              <input type="text" id="creator-badge" value="Kaiserreich Edvalt · Author Note" oninput="livePreview()">
+            </div>
+            <div class="field">
+              <label class="field-label">본문</label>
+              <textarea id="creator-body" rows="5" oninput="livePreview()">안녕하세요 이판입니다 ✪ ω ✪</textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 유저노트 -->
+      <div class="panel" id="panel-usernote">
+        <div class="section-card">
+          <div class="section-header"><span class="section-label">유저노트</span></div>
+          <div class="section-body">
+            <div class="field">
+              <label class="field-label">제목</label>
+              <input type="text" id="usernote-title" value="유저노트" oninput="livePreview()">
+            </div>
+            <div class="field">
+              <label class="field-label">내용 (HTML 줄바꿈: &lt;br&gt;)</label>
+              <textarea id="usernote-body" rows="5" oninput="livePreview()">{{char}}: N
+{{user}}: U</textarea>
+            </div>
+            <p style="font-size:10px; color:var(--text3); margin-top:5px;">줄바꿈은 자동으로 &lt;br&gt;로 변환돼요.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 페르소나 -->
+      <div class="panel" id="panel-persona">
+        <div class="section-card">
+          <div class="section-header"><span class="section-label">페르소나 양식</span></div>
+          <div class="section-body">
+            <div class="field">
+              <label class="field-label">제목</label>
+              <input type="text" id="persona-title" value="페르소나 양식" oninput="livePreview()">
+            </div>
+            <div class="field">
+              <label class="field-label">양식 내용 (줄바꿈 자동 변환)</label>
+              <textarea id="persona-body" rows="7" oninput="livePreview()">이름: {{user}}
+나이:
+외형:
+사는 곳:
+제국 귀족 계급:
+기타:</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 명령어 -->
+      <div class="panel" id="panel-commands">
+        <div class="section-card">
+          <div class="section-header">
+            <span class="section-label">명령어</span>
+            <button class="btn-sm btn-add" onclick="addCommand()">+ 추가</button>
+          </div>
+          <div class="section-body">
+            <div class="cmd-list" id="cmd-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 마무리 -->
+      <div class="panel" id="panel-closing">
+        <div class="section-card">
+          <div class="section-header"><span class="section-label">마무리 멘트</span></div>
+          <div class="section-body">
+            <div class="field">
+              <label class="field-label">닫는 메시지</label>
+              <textarea id="closing-msg" rows="3" oninput="livePreview()">부디 좋은 인연을 맺기를 (∪.∪ )...zzz</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 코드 -->
+      <div class="panel" id="panel-output">
+        <div style="display:flex; gap:7px; margin-bottom:10px; flex-wrap:wrap;">
+          <button class="btn-sm btn-add" onclick="renderOutputArea()">코드 생성</button>
+          <button class="btn-copy" onclick="copyCode()" style="font-size:11px; padding:6px 13px;">클립보드 복사</button>
+        </div>
+        <div class="output-area" id="output-area">← 코드 생성 버튼을 눌러주세요</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="resizer" id="resizer"></div>
+
+  <!-- RIGHT: PREVIEW -->
+  <div class="right-pane">
+    <div class="preview-header">
+      <span class="preview-label">✦ Live Preview</span>
+      <span style="font-size:9px; color:#5a4828; letter-spacing:0.15em;">Edvalt Imperial Archive</span>
+    </div>
+    <div class="preview-iframe-wrap">
+      <iframe id="preview-iframe" sandbox="allow-same-origin" scrolling="yes"></iframe>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+const state = {
+  headerLabel: 'Edvalt Imperial Archive',
+  fileNo: 'EIA-COMMENT-001',
+  footerLabel: 'Valid by Edvalt Imperial Archive',
+  status: 'VALID',
+  creatorTitle: '크리에이터 코멘트',
+  creatorBadge: 'Kaiserreich Edvalt · Author Note',
+  creatorBody: '안녕하세요 이판입니다 ✪ ω ✪',
+  usernoteTitle: '유저노트',
+  usernoteBody: '{{char}}: N\n{{user}}: U',
+  personaTitle: '페르소나 양식',
+  personaBody: '이름: {{user}}\n나이:\n외형:\n사는 곳:\n제국 귀족 계급:\n기타:',
+  commands: [
+    { cmd: '!에드 / !ED',  desc: '에드발트 제국의 익명 게시판을 볼 수 있습니다.' },
+    { cmd: '!이벤트 / !EV', desc: '그 달의 행사 초대장이 날라옵니다.' },
+    { cmd: '!만약 / !AU',  desc: '{{char}}와 {{user}}의 AU 프로필과 에피소드 하나가 나옵니다.' },
+    { cmd: '!출력 / !OOC', desc: 'OOC를 간단하게 즐길 수 있습니다.' },
+  ],
+  closingMsg: '부디 좋은 인연을 맺기를 (∪.∪ )...zzz',
+};
+
+// ── TABS ──
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    if (tab.dataset.panel === 'output') renderOutputArea();
+  });
+});
+
+// ── STATUS ──
+function selectStatus(el) {
+  document.querySelectorAll('#status-opts .status-opt').forEach(o => o.className = 'status-opt');
+  const val = el.dataset.val;
+  if (val === 'VALID') el.className = 'status-opt sel-valid';
+  else if (val === 'CLOSED') el.className = 'status-opt sel-closed';
+  else el.className = 'status-opt sel-wip';
+  state.status = val;
+  livePreview();
+}
+
+function statusColor() {
+  if (state.status === 'VALID') return '#a0d090';
+  if (state.status === 'CLOSED') return '#e07070';
+  return '#b080d0';
+}
+
+// ── COMMANDS ──
+function renderCommands() {
+  const container = document.getElementById('cmd-list');
+  container.innerHTML = '';
+  state.commands.forEach((cmd, i) => {
+    const el = document.createElement('div');
+    el.className = 'cmd-item';
+    el.innerHTML = `
+      <div style="display:flex; align-items:center; gap:7px; margin-bottom:8px;">
+        <span style="font-size:11px; color:var(--text3);">#${i+1}</span>
+        <button class="btn-sm btn-danger" onclick="removeCommand(${i})" style="margin-left:auto; padding:3px 9px;">삭제</button>
+      </div>
+      <div class="field">
+        <label class="field-label">명령어</label>
+        <input type="text" value="${cmd.cmd.replace(/"/g,'&quot;')}" oninput="state.commands[${i}].cmd=this.value; livePreview()" placeholder="!명령어 / !CMD">
+      </div>
+      <div class="field">
+        <label class="field-label">설명</label>
+        <input type="text" value="${cmd.desc.replace(/"/g,'&quot;')}" oninput="state.commands[${i}].desc=this.value; livePreview()" placeholder="설명...">
+      </div>
+    `;
+    container.appendChild(el);
+  });
+}
+function addCommand() {
+  state.commands.push({ cmd: '', desc: '' });
+  renderCommands();
+  livePreview();
+}
+function removeCommand(i) { state.commands.splice(i, 1); renderCommands(); livePreview(); }
+
+// ── SYNC FROM DOM ──
+function syncFromDOM() {
+  state.headerLabel  = document.getElementById('header-label').value.trim();
+  state.fileNo       = document.getElementById('file-no').value.trim();
+  state.footerLabel  = document.getElementById('footer-label').value.trim();
+  state.creatorTitle = document.getElementById('creator-title').value.trim();
+  state.creatorBadge = document.getElementById('creator-badge').value.trim();
+  state.creatorBody  = document.getElementById('creator-body').value;
+  state.usernoteTitle = document.getElementById('usernote-title').value.trim();
+  state.usernoteBody  = document.getElementById('usernote-body').value;
+  state.personaTitle  = document.getElementById('persona-title').value.trim();
+  state.personaBody   = document.getElementById('persona-body').value;
+  state.closingMsg    = document.getElementById('closing-msg').value;
+}
+
+function nl2br(s) { return s.replace(/\n/g, '<br>\n        '); }
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── GENERATE ──
+function generateBodyHTML() {
+  syncFromDOM();
+
+  const cmdHTML = state.commands.map((c, i) => {
+    const mb = i < state.commands.length - 1 ? ' margin-bottom: 7px;' : '';
+    return `<div style="background:#1a1510; border:1px solid #3a2e18; border-radius:2px; padding:10px 12px;${mb} box-sizing:border-box;">
+        <div style="font-size:12px; color:#e8c86a; font-weight:bold; margin-bottom:3px;">${c.cmd}</div>
+        <div style="font-size:12px; line-height:1.7; color:#b0a080;">${c.desc}</div>
+      </div>`;
+  }).join('\n      ');
+
+  return `<div style="max-width:900px; margin:0 auto; padding:16px 10px; font-family:'Georgia','Nanum Myeongjo','Batang',serif; color:#e8dcc8; line-height:1.45; box-sizing:border-box;">
+  <div style="background:#1a1510; border:1px solid #6a5830; border-radius:4px; padding:14px; box-shadow:0 8px 18px rgba(0,0,0,0.4); box-sizing:border-box; overflow:hidden;">
+    <div style="text-align:right; font-size:10px; font-weight:bold; color:#9a7e48; letter-spacing:0.3px; margin-bottom:6px;">${state.headerLabel}</div>
+    <div style="height:1px; background:linear-gradient(90deg,transparent,#8a7040,transparent); margin-bottom:12px;"></div>
+    <div style="background:#211c12; border:1px solid #4a3c20; border-radius:4px; padding:14px 13px; margin-bottom:10px; box-sizing:border-box;">
+      <div style="font-size:8px; color:#9a7e48; font-weight:bold; letter-spacing:0.8px; margin-bottom:4px;">CREATOR FILE</div>
+      <div style="font-size:22px; line-height:1.1; font-weight:normal; color:#f5ead4; letter-spacing:0.04em; margin-bottom:10px;">${state.creatorTitle}</div>
+      <div style="display:inline-block; background:#1a1510; border:1px solid #5a4828; border-radius:2px; padding:3px 10px; font-size:9px; font-weight:bold; color:#c0a060; letter-spacing:0.3px; margin-bottom:12px;">${state.creatorBadge}</div>
+      <div style="font-size:13px; line-height:1.9; color:#cdbf9c; font-weight:normal; word-break:keep-all;">
+        ${nl2br(state.creatorBody)}
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:stretch; margin-bottom:10px; box-sizing:border-box;">
+      <div style="flex:1 1 0; min-width:0; background:#211c12; border:1px solid #4a3c20; border-radius:4px; padding:8px 10px; box-sizing:border-box;">
+        <div style="font-size:8px; color:#9a7e48; font-weight:bold; letter-spacing:0.8px; margin-bottom:3px;">FILE NO.</div>
+        <div style="font-size:12px; color:#e0d4b8; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${state.fileNo}</div>
+      </div>
+      <div style="flex:0 0 84px; background:#211c12; border:1px solid #4a3c20; border-radius:4px; padding:8px 10px; box-sizing:border-box; text-align:right;">
+        <div style="font-size:8px; color:#9a7e48; font-weight:bold; letter-spacing:0.8px; margin-bottom:3px;">STATUS</div>
+        <div style="font-size:12px; color:${statusColor()}; font-weight:bold;">${state.status}</div>
+      </div>
+    </div>
+    <div style="background:#211c12; border:1px solid #4a3c20; border-radius:4px; padding:13px; margin-bottom:10px; box-sizing:border-box;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+        <div style="font-size:14px; font-weight:normal; color:#f5ead4; letter-spacing:0.04em;">${state.usernoteTitle}</div>
+        <div style="font-size:8px; font-weight:bold; color:#9a7e48; letter-spacing:0.8px;">MEMO</div>
+      </div>
+      <div style="background:#1a1510; border:1px solid #3a2e18; border-radius:2px; padding:10px 12px; font-size:13px; line-height:1.9; color:#b0a080; box-sizing:border-box;">
+        ${nl2br(state.usernoteBody)}
+      </div>
+    </div>
+    <div style="background:#211c12; border:1px solid #4a3c20; border-radius:4px; padding:13px; margin-bottom:10px; box-sizing:border-box;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+        <div style="font-size:14px; font-weight:normal; color:#f5ead4; letter-spacing:0.04em;">${state.personaTitle}</div>
+        <div style="font-size:8px; font-weight:bold; color:#9a7e48; letter-spacing:0.8px;">PERSONA</div>
+      </div>
+      <div style="background:#1a1510; border:1px solid #3a2e18; border-radius:2px; padding:10px 12px; font-size:13px; line-height:1.9; color:#b0a080; box-sizing:border-box;">
+        ${nl2br(state.personaBody)}
+      </div>
+    </div>
+    <div style="background:#211c12; border:1px solid #4a3c20; border-radius:4px; padding:13px; margin-bottom:10px; box-sizing:border-box;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+        <div style="font-size:14px; font-weight:normal; color:#f5ead4; letter-spacing:0.04em;">명령어</div>
+        <div style="font-size:8px; font-weight:bold; color:#9a7e48; letter-spacing:0.8px;">COMMAND</div>
+      </div>
+      ${cmdHTML}
+    </div>
+    <div style="background:#211c12; border:1px dashed #5a4828; border-radius:4px; padding:12px; text-align:center; box-sizing:border-box; margin-bottom:10px;">
+      <div style="font-size:13px; line-height:1.8; color:#c0a060; word-break:keep-all;">${nl2br(state.closingMsg)}</div>
+    </div>
+    <div style="text-align:right; font-size:10px; font-weight:bold; color:#7a6030; margin-bottom:6px;">${state.footerLabel}</div>
+    <div style="height:1px; background:linear-gradient(90deg,transparent,#8a7040,transparent);"></div>
+  </div>
+</div>`;
+}
+
+function renderOutputArea() {
+  document.getElementById('output-area').textContent = generateBodyHTML();
+}
+
+// ── LIVE PREVIEW ──
+let previewDebounce = null;
+function livePreview() {
+  clearTimeout(previewDebounce);
+  previewDebounce = setTimeout(() => {
+    const iframe = document.getElementById('preview-iframe');
+    const body = generateBodyHTML();
+    const doc = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#1a1510;}</style></head><body>${body}</body></html>`;
+    iframe.srcdoc = doc;
+  }, 180);
+}
+
+function copyCode() {
+  const code = generateBodyHTML();
+  navigator.clipboard.writeText(code).then(() => {
+    showToast('✦ HTML 코드가 복사됐어요!');
+  }).catch(() => showToast('복사 실패 — 브라우저 권한을 확인해주세요'));
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── RESIZER ──
+const resizer = document.getElementById('resizer');
+const leftPane = document.getElementById('left-pane');
+let isResizing = false, startX = 0, startWidth = 0;
+resizer.addEventListener('mousedown', e => {
+  isResizing = true; startX = e.clientX; startWidth = leftPane.offsetWidth;
+  resizer.classList.add('dragging'); document.body.style.userSelect = 'none'; document.body.style.cursor = 'col-resize';
+});
+document.addEventListener('mousemove', e => {
+  if (!isResizing) return;
+  leftPane.style.width = Math.max(280, Math.min(620, startWidth + e.clientX - startX)) + 'px';
+});
+document.addEventListener('mouseup', () => {
+  if (!isResizing) return;
+  isResizing = false; resizer.classList.remove('dragging');
+  document.body.style.userSelect = ''; document.body.style.cursor = '';
+});
+
+// ── INIT ──
+function init() {
+  renderCommands();
+  livePreview();
+}
+init();
+</script>
+</body>
+</html>
